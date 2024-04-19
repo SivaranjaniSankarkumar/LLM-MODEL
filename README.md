@@ -1,2 +1,3 @@
 # LLM-MODEL
 The Large Language Model (LLM) is a state-of-the-art natural language processing (NLP) model designed to understand and generate human-like text based on the input it receives. Built on advanced machine learning techniques and vast amounts of text data, LLMs have revolutionized various NLP tasks, including language translation.
+This repository contains a Python-based implementation of a Large Language Model (LLM) that integrates principles of data mining to enhance text generation, analysis, and understanding. Leveraging advanced machine learning techniques and data mining algorithms, this LLM aims to provide a robust framework for exploring and processing textual data, extracting meaningful insights, and generating coherent and contextually relevant text.
