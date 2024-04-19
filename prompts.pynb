@@ -1,0 +1,83 @@
+#import packages
+import numpy as np
+import nltk
+import string
+import random
+# Using punkt Tokenizer
+nltk.download('punkt')
+# Using wordnet Dictionary
+nltk.download('wordnet')
+nltk.download('omw-1.4')
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+#Read the text file from drive
+f = open('/content/drive/MyDrive/Da basic/Me/Chatgpt data of dm/tadata.txt','r', errors= 'ignore')
+data=f.read()
+data
+
+# Convert into lower and sentence tokenizer
+data=data.lower()
+sentoken=nltk.sent_tokenize(data)
+wordtoken=nltk.word_tokenize(data)
+sentoken[:5]
+# word tokenizer
+wordtoken[:10]
+
+# Using WordnetLemmatizer lemmadation, remove punctions on data and save as tokens
+lemmer = nltk.stem.WordNetLemmatizer()
+def Lemtoken(tokens):
+  return [lemmer.lemmatize(token) for token in tokens]
+puncdict=dict((ord(punct),None) for punct in string.punctuation)
+def LemNormalize(text):
+  return Lemtoken(nltk.word_tokenize(text.lower().translate(puncdict)))
+
+# Greeting responses from chatbot define a function
+greetinput=('hello','hii','chatbot','hey','whatsapp','how are you')
+greetresponse=('hello','hi','welcome','heyy','good start with you today','you made my day bright!! how can i help you')
+def greet(sentence):
+  for word in sentence.split():
+    if word.lower() in greetinput:
+      return random.choice(greetresponse)
+print (greet('chatbot hii'))
+
+# define response function to generate response for chatbot
+def response(userresponse):
+  robolresponse= ''
+  TfidfVec = TfidfVectorizer(tokenizer = LemNormalize, stop_words='english') # tokeniztion function, remove stop words
+  tfidf = TfidfVec.fit_transform(sentoken) # calculate termfrequency
+  vals = cosine_similarity(tfidf[-1],tfidf) # and cosine similarity of term frequency
+  idx = vals.argsort()[0][-2] #binding most similar or the first elements
+  flat = vals.flatten() # flatten the values
+  flat.sort()
+  reqtfidf = flat[-2]
+  if (reqtfidf == 0): # if the user entered word not in the database then it returns unable to understand
+    robolresponse = robolresponse + "I am sorry. Unable to understand you"
+    return robolresponse
+  else:
+    robolresponse = robolresponse + sentoken[idx]
+    return robolresponse
+
+flag = True
+print("Hello!! start with greeting and end with 'bye',How can i help you with today")
+while (flag == True):
+  userresponse = input("User :")
+  userresponse = userresponse.lower()
+  if (userresponse != 'bye'):
+    if (userresponse == 'thank you' or userresponse == 'thanks'):
+      flag = False
+      print('Bot: you are welcome..')
+    else:
+      if(greet(userresponse) != None):
+        print('Bot ' + greet(userresponse))
+      else:
+        sentoken.append(userresponse)
+        wordtoken = wordtoken + nltk.word_tokenize(userresponse)
+        finalwords = list(set(wordtoken))
+        print('Bot: ', end = '')
+        print(response(userresponse))
+        sentoken.remove(userresponse)
+  else:
+    flag = False
+    print('Bot: Goodbye! have nice day!')
+
